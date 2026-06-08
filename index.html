@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LPWAN & Sub-GHz IoT Comparison Matrix</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="An interactive comparison matrix detailing LPWAN and Sub-GHz IoT technologies including LoRa/LoRaWAN, NB-IoT, Sigfox, Wi-SUN FAN, and Wi-Fi HaLow across key specifications, modulation, range, battery life, and applications.">
+  <meta name="keywords"
+    content="LPWAN, IoT, LoRa, LoRaWAN, NB-IoT, Sigfox, Wi-SUN, Wi-Fi HaLow, 802.11ah, comparison matrix, Sub-GHz, internet of things">
+  <!-- Fonts: Outfit (headings) and Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* --- CSS Design System & Variables --- */
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: rgba(15, 23, 42, 0.6);
+      --bg-card-hover: rgba(30, 41, 59, 0.7);
+      --border-card: rgba(255, 255, 255, 0.06);
+      --border-card-hover: rgba(255, 255, 255, 0.12);
+
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+
+      /* Tech Branding Colors */
+      --lora-color: #a855f7;
+      --lora-bg: rgba(168, 85, 247, 0.08);
+      --lora-gradient: linear-gradient(135deg, #a855f7, #7e22ce);
+      --lora-glow: rgba(168, 85, 247, 0.25);
+
+      --nbiot-color: #06b6d4;
+      --nbiot-bg: rgba(6, 182, 212, 0.08);
+      --nbiot-gradient: linear-gradient(135deg, #06b6d4, #0369a1);
+      --nbiot-glow: rgba(6, 182, 212, 0.25);
+
+      --sigfox-color: #f97316;
+      --sigfox-bg: rgba(249, 115, 22, 0.08);
+      --sigfox-gradient: linear-gradient(135deg, #f97316, #c2410c);
+      --sigfox-glow: rgba(249, 115, 22, 0.25);
+
+      --wisun-color: #10b981;
+      --wisun-bg: rgba(16, 185, 129, 0.08);
+      --wisun-gradient: linear-gradient(135deg, #10b981, #047857);
+      --wisun-glow: rgba(16, 185, 129, 0.25);
+
+      --halow-color: #ec4899;
+      --halow-bg: rgba(236, 72, 153, 0.08);
+      --halow-gradient: linear-gradient(135deg, #ec4899, #be185d);
+      --halow-glow: rgba(236, 72, 153, 0.25);
+
+      /* Highlight & Alert */
+      --highlight-color: #f59e0b;
+      --highlight-bg: rgba(245, 158, 11, 0.15);
+      --warning-color: #ef4444;
+      --warning-bg: rgba(239, 68, 68, 0.08);
+
+      --transition-speed: 0.25s;
+    }
+
+    /* --- Reset & Layout Base --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* --- Glowing Background Blobs --- */
+    .glow-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.12;
+      animation: float 25s infinite alternate ease-in-out;
+    }
+
+    .blob-1 {
+      width: 50vw;
+      height: 50vw;
+      background: var(--lora-color);
+      top: -10vw;
+      left: -10vw;
+    }
+
+    .blob-2 {
+      width: 45vw;
+      height: 45vw;
+      background: var(--nbiot-color);
+      bottom: -10vw;
+      right: -10vw;
+      animation-delay: -7s;
+    }
+
+    .blob-3 {
+      width: 35vw;
+      height: 35vw;
+      background: var(--halow-color);
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+
+      33% {
+        transform: translate(30px, -50px) scale(1.05) rotate(120deg);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.95) rotate(240deg);
+      }
+
+      100% {
+        transform: translate(0, 0) scale(1) rotate(360deg);
+      }
+    }
+
+    /* --- Container & Typography --- */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .badge-top span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+    }
+
+    header h1 {
+      font-size: 2.75rem;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* --- Glass Card Base --- */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      transition: border-color var(--transition-speed), background var(--transition-speed), transform var(--transition-speed);
+    }
+
+    .glass-card:hover {
+      border-color: var(--border-card-hover);
+    }
+
+    /* --- Control Bar --- */
+    .control-bar {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 10;
+      position: relative;
+    }
+
+    .control-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Search Input */
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 280px;
+      max-width: 480px;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: color var(--transition-speed);
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    }
+
+    .search-wrapper input:focus {
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+    }
+
+    .search-wrapper input:focus+i {
+      color: var(--text-secondary);
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: none;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color var(--transition-speed), background var(--transition-speed);
+    }
+
+    .clear-search-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* View Toggle */
+    .toggle-wrapper {
+      display: flex;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.25rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color var(--transition-speed), background var(--transition-speed);
+    }
+
+    .toggle-btn.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .toggle-btn:hover:not(.active) {
+      color: var(--text-secondary);
+    }
+
+    /* Filter Pills */
+    .tech-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1rem;
+    }
+
+    .filter-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all var(--transition-speed);
+    }
+
+    .pill::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--pill-color);
+      box-shadow: 0 0 6px var(--pill-color);
+      transition: opacity var(--transition-speed);
+    }
+
+    .pill.inactive {
+      opacity: 0.4;
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.03);
+      text-decoration: line-through;
+    }
+
+    .pill.inactive::before {
+      opacity: 0.2;
+      box-shadow: none;
+    }
+
+    /* --- Dynamic Display Frame --- */
+    .display-frame {
+      min-height: 400px;
+      position: relative;
+    }
+
+    /* --- TABLE VIEW --- */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      position: relative;
+      /* Smooth scrollbar styling */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .matrix-table th,
+    .matrix-table td {
+      padding: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      vertical-align: top;
+      transition: background-color var(--transition-speed);
+    }
+
+    .matrix-table th:last-child,
+    .matrix-table td:last-child {
+      border-right: none;
+    }
+
+    /* Header Styling */
+    .matrix-table thead tr th {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    /* First column (Categories) sticky left on large viewports */
+    .matrix-table .cat-col {
+      width: 180px;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: rgba(20, 28, 48, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .cat-header {
+      background: rgba(15, 23, 42, 0.95) !important;
+      position: sticky;
+      left: 0;
+      z-index: 6 !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cat-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+
+    .cat-info i {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* Column Sizing and Branding Accents */
+    .tech-header-cell {
+      width: 200px;
+      text-align: center;
+      position: relative;
+    }
+
+    .tech-header-cell::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--tech-accent);
+      opacity: 0.7;
+    }
+
+    .tech-header-cell h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .tech-link {
+      color: inherit;
+      text-decoration: none;
+      transition: color var(--transition-speed), text-shadow var(--transition-speed), opacity var(--transition-speed);
+      position: relative;
+    }
+
+    .tech-link:hover {
+      color: var(--tech-accent, var(--text-primary)) !important;
+      text-shadow: 0 0 10px var(--tech-glow, rgba(255, 255, 255, 0.25));
+    }
+
+    /* Trigger header cell hover for entire cell */
+    .tech-header-cell:hover .tech-link {
+      color: var(--tech-accent, var(--text-primary)) !important;
+      text-shadow: 0 0 10px var(--tech-glow, rgba(255, 255, 255, 0.25));
+    }
+
+    /* Trigger card hover glow for the card title */
+    .tech-card:hover .tech-link {
+      text-shadow: 0 0 10px var(--tech-glow, rgba(255, 255, 255, 0.25));
+    }
+
+    /* Trigger duel header hover for title link */
+    .duel-tech-header:hover .tech-link {
+      color: var(--tech-accent, var(--text-primary)) !important;
+      text-shadow: 0 0 10px var(--tech-glow, rgba(255, 255, 255, 0.25));
+    }
+
+    .tech-header-cell span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Content Cell Styling */
+    .content-cell {
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Table Hover Highlights */
+    .matrix-table tbody tr:hover td.cat-col {
+      background: rgba(30, 41, 59, 0.9);
+    }
+
+    .matrix-table tbody tr:hover td:not(.cat-col) {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Column Hover Highlight Triggered via JS */
+    .matrix-table td.highlighted-column,
+    .matrix-table th.highlighted-column {
+      background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    .matrix-table td.highlighted-column.content-cell {
+      color: var(--text-primary);
+    }
+
+    /* Cell search match glow */
+    .search-match-cell {
+      background-color: var(--highlight-bg) !important;
+      color: var(--text-primary) !important;
+      position: relative;
+    }
+
+    .search-match-cell::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--highlight-color);
+    }
+
+    .search-match-highlight {
+      background: rgba(245, 158, 11, 0.35);
+      border-radius: 2px;
+      padding: 0px 2px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    /* Hide Inactive Columns */
+    .col-hidden {
+      display: none !important;
+    }
+
+    /* --- GRID CARD VIEW --- */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tech-card {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tech-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--tech-accent-gradient);
+    }
+
+    .card-header-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title-wrap h3 {
+      font-size: 1.35rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-title-wrap h3 a {
+      background: var(--tech-accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .card-title-wrap span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .tech-logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--tech-bg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--tech-accent);
+      box-shadow: 0 0 15px var(--tech-glow);
+    }
+
+    /* Card Spec Items */
+    .card-specs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 1rem;
+    }
+
+    .spec-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .spec-item-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .spec-item-title i {
+      font-size: 0.9rem;
+      width: 14px;
+      height: 14px;
+    }
+
+    .spec-item-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Card Performance Sliders */
+    .card-metrics-section {
+      margin-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1.25rem;
+    }
+
+    .metric-row {
+      margin-bottom: 0.85rem;
+    }
+
+    .metric-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .metric-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .metric-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--tech-accent-gradient);
+      box-shadow: 0 0 8px var(--tech-glow);
+      width: 0%;
+      /* Animated via JS */
+      transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* --- HEAD-TO-HEAD DUEL COMPARE TOOL --- */
+    .duel-compare-section {
+      margin-top: 4rem;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+
+    .duel-card {
+      padding: 2rem;
+    }
+
+    .duel-selectors {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .selector-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-width: 240px;
+    }
+
+    .selector-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .duel-select {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.8rem 1.2rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.25rem;
+      padding-right: 2.5rem;
+      transition: border-color var(--transition-speed);
+    }
+
+    .duel-select:focus {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .vs-divider {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-style: italic;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.05);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 1.25rem;
+    }
+
+    .duel-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      position: relative;
+    }
+
+    .duel-content::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .duel-column {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .duel-tech-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 2px solid var(--column-color);
+      padding-bottom: 1rem;
+    }
+
+    .duel-tech-header h3 {
+      font-size: 1.75rem;
+      color: var(--text-primary);
+    }
+
+    /* Comparison Metrics Radial / Bar compare */
+    .duel-metrics-panel {
+      grid-column: span 2;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .duel-metrics-title {
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .compare-metric-row {
+      margin-bottom: 1.5rem;
+    }
+
+    .compare-metric-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .compare-metric-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .compare-metric-label span {
+      width: 33%;
+    }
+
+    .compare-metric-label .metric-name {
+      color: var(--text-primary);
+    }
+
+    .dual-bars {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .dual-bar-container {
+      width: 50%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dual-bar-left {
+      transform: scaleX(-1);
+      /* fill right to left */
+    }
+
+    .dual-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 99px;
+      transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .winner-glow {
+      box-shadow: 0 0 12px var(--winner-color);
+    }
+
+    /* Spec compare boxes */
+    .duel-spec-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .duel-spec-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .duel-spec-val {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 1rem;
+      border-radius: 8px;
+      min-height: 80px;
+    }
+
+    /* --- DISCLAIMER / NOTE BANNER --- */
+    .disclaimer-banner {
+      margin-top: 3.5rem;
+      padding: 1.5rem;
+      border-left: 4px solid var(--highlight-color);
+      background: rgba(245, 158, 11, 0.03);
+      border-radius: 0 12px 12px 0;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      backdrop-filter: blur(10px);
+    }
+
+    .disclaimer-banner i {
+      color: var(--highlight-color);
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    .disclaimer-text h4 {
+      color: var(--text-primary);
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .disclaimer-text p {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    /* --- MODAL DETAILED VIEW --- */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 7, 18, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 600px;
+      background: #0d1322;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color var(--transition-speed), background var(--transition-speed);
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-body {
+      padding: 2rem 1.5rem;
+    }
+
+    .modal-tech-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
+      margin-bottom: 1rem;
+    }
+
+    .modal-desc {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* --- RESPONSIVE BREAKPOINTS --- */
+    @media (max-width: 992px) {
+      .duel-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .duel-content::after {
+        display: none;
+      }
+
+      .vs-divider {
+        display: none;
+      }
+
+      .duel-metrics-panel {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.25rem;
+      }
+
+      .control-bar {
+        padding: 1rem;
+      }
+
+      .matrix-table {
+        font-size: 0.88rem;
+      }
+
+      .matrix-table th,
+      .matrix-table td {
+        padding: 1rem 0.75rem;
+      }
+
+      .matrix-table .cat-col {
+        width: 140px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 1rem 1rem 3rem 1rem;
+      }
+
+      header {
+        margin-bottom: 2rem;
+      }
+
+      .control-top-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-wrapper {
+        max-width: none;
+      }
+
+      .toggle-wrapper {
+        justify-content: center;
+      }
+
+      .tech-filters {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .pills-container {
+        width: 100%;
+      }
+
+      .pill {
+        flex-grow: 1;
+        justify-content: center;
+      }
+    }
+
+    /* --- UTILITY ANIMATIONS --- */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background Glowing Blobs -->
+  <div class="glow-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <div class="badge-top">
+        <span></span> Sub-GHz IoT Networks
+      </div>
+      <h1>LPWAN & Sub-GHz IoT Comparison Matrix</h1>
+      <p>A comprehensive side-by-side analysis comparing LoRa, NB-IoT, Sigfox, Wi-SUN, and Wi-Fi HaLow across key
+        wireless dimensions, physical characteristics, and typical IoT applications.</p>
+    </header>
+
+    <!-- Interactive Controls Bar -->
+    <div class="control-bar glass-card">
+      <div class="control-top-row">
+        <!-- Search bar -->
+        <div class="search-wrapper">
+          <i data-lucide="search"></i>
+          <input type="text" id="search-input" placeholder="Search parameters, modulation, applications...">
+          <button id="clear-search" class="clear-search-btn" title="Clear search">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <!-- View Switcher -->
+        <div class="toggle-wrapper">
+          <button class="toggle-btn active" data-view="table" id="view-table-btn">
+            <i data-lucide="table"></i> Grid Matrix
+          </button>
+          <button class="toggle-btn" data-view="cards" id="view-cards-btn">
+            <i data-lucide="layout-grid"></i> Detailed Cards
+          </button>
+        </div>
+      </div>
+
+      <!-- Columns / Technology Filters -->
+      <div class="tech-filters">
+        <span class="filter-title">Toggle Technologies:</span>
+        <div class="pills-container" id="pills-container">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dynamic Display Frame -->
+    <div class="display-frame" id="display-frame">
+      <!-- Content dynamically injected via JS -->
+    </div>
+
+    <!-- Head-to-Head Duel Widget -->
+    <div class="duel-compare-section">
+      <div class="section-header">
+        <h2><i data-lucide="swords"></i> Technology Duel</h2>
+        <p>Select any two IoT communication standards to perform a head-to-head performance compare</p>
+      </div>
+
+      <div class="duel-card glass-card">
+        <!-- Dual Selectors -->
+        <div class="duel-selectors">
+          <div class="selector-group">
+            <label for="duel-select-a">Technology A</label>
+            <select id="duel-select-a" class="duel-select">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <div class="vs-divider">VS</div>
+
+          <div class="selector-group">
+            <label for="duel-select-b">Technology B</label>
+            <select id="duel-select-b" class="duel-select">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Duel Comparison Content -->
+        <div class="duel-content" id="duel-content">
+          <!-- Dynamically updated via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer / Note -->
+    <div class="disclaimer-banner glass-card">
+      <i data-lucide="info"></i>
+      <div class="disclaimer-text">
+        <h4>Note on Theoretical Battery Life</h4>
+        <p>Theoretical battery life varies significantly depending on battery capacity, TX power, reporting interval,
+          coverage condition, sleep current, repetition count, RX window behavior, and network configuration. The values
+          represented in this dashboard should be treated as typical design targets or theoretical ranges, not
+          guaranteed results.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Detail Cell Modal -->
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title"><i data-lucide="info"></i> Detail View</h3>
+        <button class="modal-close" id="modal-close-btn" title="Close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <span class="modal-tech-badge" id="modal-badge">Tech</span>
+        <div class="modal-desc" id="modal-desc">Details go here...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC --- -->
+  <script>
+    // Comparison Matrix Data
+    const techData = {
+      lora: {
+        id: 'lora',
+        name: 'LoRa / LoRaWAN',
+        shortName: 'LoRa',
+        url: 'https://jacobs-ting.github.io/LoRa-WAN-Simulation/',
+        color: 'var(--lora-color)',
+        bgColor: 'var(--lora-bg)',
+        gradient: 'var(--lora-gradient)',
+        glow: 'var(--lora-glow)',
+        icon: 'radio',
+        metrics: { range: 95, throughput: 15, battery: 98, cost: 90 },
+        specs: {
+          specification: 'LoRa PHY + LoRaWAN MAC',
+          positioning: 'Classic LPWAN',
+          modulation: 'Chirp Spread Spectrum (CSS)',
+          datarate: 'Typically around 0.3–50 kbps, depending on spreading factor, bandwidth, coding rate, and region',
+          coverage: 'Several kilometers in urban areas; 10–15 km or more in open rural environments depending on gateway height and link budget',
+          frequency: 'Sub-GHz ISM bands such as 868 MHz, 915 MHz, AS923, and other regional bands',
+          battery: 'Common design target: 5–10 years for low-duty-cycle sensor nodes',
+          applications: 'Agriculture sensors, environmental monitoring, smart parking, private IoT networks, factory sensors, remote monitoring'
+        }
+      },
+      nbiot: {
+        id: 'nbiot',
+        name: 'NB-IoT',
+        shortName: 'NB-IoT',
+        url: 'https://jacobs-ting.github.io/NB_IOT_Siulation/',
+        color: 'var(--nbiot-color)',
+        bgColor: 'var(--nbiot-bg)',
+        gradient: 'var(--nbiot-gradient)',
+        glow: 'var(--nbiot-glow)',
+        icon: 'cpu',
+        metrics: { range: 92, throughput: 45, battery: 80, cost: 60 },
+        specs: {
+          specification: '3GPP NB-IoT / LTE Cat-NB',
+          positioning: 'Cellular LPWAN',
+          modulation: 'Downlink: OFDMA-based; Uplink: SC-FDMA, single-tone or multi-tone transmission',
+          datarate: 'Tens to hundreds of kbps, depending on deployment, coverage level, repetition, MCS, and UL/DL configuration',
+          coverage: 'Cellular coverage with strong deep-indoor capability; coverage can be enhanced through repetition and narrowband operation',
+          frequency: 'Licensed cellular spectrum; uses 180 kHz narrowband resource within LTE spectrum, including standalone, in-band, and guard-band deployment',
+          battery: 'Often designed for 10-year-class battery life using PSM/eDRX and low reporting frequency, but highly dependent on coverage and repetition count',
+          applications: 'Water meters, gas meters, basement sensors, fixed IoT devices, operator-managed IoT, low-frequency status reporting'
+        }
+      },
+      sigfox: {
+        id: 'sigfox',
+        name: 'Sigfox',
+        shortName: 'Sigfox',
+        url: 'sigfox.html',
+        color: 'var(--sigfox-color)',
+        bgColor: 'var(--sigfox-bg)',
+        gradient: 'var(--sigfox-gradient)',
+        glow: 'var(--sigfox-glow)',
+        icon: 'activity',
+        metrics: { range: 90, throughput: 5, battery: 95, cost: 95 },
+        specs: {
+          specification: 'Sigfox 0G / Ultra Narrow Band',
+          positioning: 'Ultra-narrowband LPWAN',
+          modulation: 'Uplink: DBPSK / BPSK; Downlink: GFSK; Ultra Narrow Band',
+          datarate: 'Very low data rate, typically around 100 bps or 600 bps depending on regional configuration',
+          coverage: 'Typically 1–3 km in urban areas; can reach much longer distances in rural or open environments',
+          frequency: 'Sub-GHz ISM bands such as 868 MHz, 902 MHz, 920 MHz, and other regional configurations',
+          battery: 'Can reach multi-year to 10-year-class battery life for very low-frequency reporting and small payloads',
+          applications: 'Small-payload sensors, simple alarms, low-cost asset status, low-frequency monitoring, minimal uplink messages'
+        }
+      },
+      wisun: {
+        id: 'wisun',
+        name: 'Wi-SUN FAN',
+        shortName: 'Wi-SUN',
+        url: 'wisun.html',
+        color: 'var(--wisun-color)',
+        bgColor: 'var(--wisun-bg)',
+        gradient: 'var(--wisun-gradient)',
+        glow: 'var(--wisun-glow)',
+        icon: 'network',
+        metrics: { range: 85, throughput: 55, battery: 70, cost: 75 },
+        specs: {
+          specification: 'Wi-SUN FAN, based on IEEE 802.15.4g/e',
+          positioning: 'Mesh-based FAN / Utility network',
+          modulation: 'Mainly MR-FSK in FAN 1.0; FAN 1.1 also supports MR-OFDM and additional PHY options',
+          datarate: 'From tens of kbps to hundreds of kbps; FAN 1.1 with OFDM can support higher data rates',
+          coverage: 'Single-hop range is moderate, but mesh / multi-hop networking extends coverage across neighborhoods, cities, and utility networks',
+          frequency: 'Regional Sub-GHz ISM / utility bands, often around 800/900 MHz; some profiles may also support 2.4 GHz options',
+          battery: 'Utility meters are often mains-powered or designed for long-life operation; battery nodes depend heavily on sleep behavior and routing role',
+          applications: 'Smart meters, AMI, smart grid, street lighting, utility field area networks, city infrastructure'
+        }
+      },
+      halow: {
+        id: 'halow',
+        name: '802.11ah / Wi-Fi HaLow',
+        shortName: 'Wi-Fi HaLow',
+        url: 'wifi-halow.html',
+        color: 'var(--halow-color)',
+        bgColor: 'var(--halow-bg)',
+        gradient: 'var(--halow-gradient)',
+        glow: 'var(--halow-glow)',
+        icon: 'wifi',
+        metrics: { range: 60, throughput: 95, battery: 50, cost: 80 },
+        specs: {
+          specification: 'IEEE 802.11ah / Wi-Fi HaLow',
+          positioning: 'Sub-GHz IoT Wi-Fi, LPWAN-adjacent',
+          modulation: 'OFDM-based Wi-Fi modulation; supports BPSK, QPSK, 16-QAM, 64-QAM, and higher MCS depending on bandwidth and mode',
+          datarate: 'From hundreds of kbps to tens of Mbps; peak PHY rate can be much higher than typical LPWAN technologies',
+          coverage: 'Typically hundreds of meters to around 1 km class depending on environment, bandwidth, antenna, and TX power',
+          frequency: 'Sub-1 GHz bands, typically around 750–950 MHz depending on region; channel bandwidths include 1/2/4/8/16 MHz',
+          battery: 'More power-efficient than traditional Wi-Fi, but usually not as ultra-low-power as LoRa or Sigfox; better suited for devices needing higher data rate or larger battery capacity',
+          applications: 'Long-range Wi-Fi IoT, IP-based sensors, industrial IoT, agriculture gateways, cameras or sensors needing higher throughput than classic LPWAN'
+        }
+      }
+    };
+
+    const categories = {
+      specification: { label: 'Technology Specification', icon: 'cpu' },
+      positioning: { label: 'Technology Positioning', icon: 'compass' },
+      modulation: { label: 'Modulation', icon: 'activity' },
+      datarate: { label: 'Data Rate', icon: 'zap' },
+      coverage: { label: 'Coverage Range', icon: 'map-pin' },
+      frequency: { label: 'Frequency Range', icon: 'radio' },
+      battery: { label: 'Theoretical Battery Life', icon: 'battery' },
+      applications: { label: 'Typical Applications', icon: 'rocket' }
+    };
+
+    // State Variables
+    let currentView = 'table'; // 'table' or 'cards'
+    let activeTechIds = Object.keys(techData);
+    let searchQuery = '';
+
+    // Elements
+    const displayFrame = document.getElementById('display-frame');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search');
+    const pillsContainer = document.getElementById('pills-container');
+    const viewTableBtn = document.getElementById('view-table-btn');
+    const viewCardsBtn = document.getElementById('view-cards-btn');
+    const duelSelectA = document.getElementById('duel-select-a');
+    const duelSelectB = document.getElementById('duel-select-b');
+    const duelContent = document.getElementById('duel-content');
+    const detailModal = document.getElementById('detail-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBadge = document.getElementById('modal-badge');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      renderFilterPills();
+      setupSelectors();
+      renderActiveView();
+      setupEventListeners();
+      lucide.createIcons();
+    });
+
+    // --- SETUP CONTROL PANEL ---
+    function renderFilterPills() {
+      pillsContainer.innerHTML = '';
+      Object.values(techData).forEach(tech => {
+        const pill = document.createElement('button');
+        pill.className = `pill ${activeTechIds.includes(tech.id) ? 'active' : 'inactive'}`;
+        pill.style.setProperty('--pill-color', tech.color);
+        pill.innerHTML = `${tech.name}`;
+        pill.setAttribute('data-tech', tech.id);
+
+        pill.addEventListener('click', () => {
+          toggleTechActive(tech.id);
+        });
+        pillsContainer.appendChild(pill);
+      });
+    }
+
+    function toggleTechActive(techId) {
+      if (activeTechIds.includes(techId)) {
+        // Prevent disabling all technologies
+        if (activeTechIds.length <= 1) return;
+        activeTechIds = activeTechIds.filter(id => id !== techId);
+      } else {
+        activeTechIds.push(techId);
+      }
+      renderFilterPills();
+      renderActiveView();
+    }
+
+    // --- VIEW CONTROLLER ---
+    function renderActiveView() {
+      if (currentView === 'table') {
+        renderTableView();
+      } else {
+        renderCardView();
+      }
+      lucide.createIcons();
+    }
+
+    // --- TABLE VIEW RENDERER ---
+    function renderTableView() {
+      let html = `
+        <div class="table-container fade-in">
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th class="cat-col cat-header">Category</th>
+      `;
+
+      // Header row columns
+      Object.values(techData).forEach(tech => {
+        const isHidden = !activeTechIds.includes(tech.id);
+        html += `
+          <th class="tech-header-cell ${isHidden ? 'col-hidden' : ''}" 
+              data-col-id="${tech.id}"
+              style="--tech-accent: ${tech.color}; --tech-glow: ${tech.glow}">
+            <h3><a href="${tech.url}" class="tech-link">${tech.name}</a></h3>
+            <span>${tech.specs.positioning.split(' ')[0]}</span>
+          </th>
+        `;
+      });
+
+      html += `
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      // Table body rows (Categories)
+      Object.entries(categories).forEach(([catKey, catVal]) => {
+        html += `
+          <tr data-row-key="${catKey}">
+            <td class="cat-col">
+              <div class="cat-info">
+                <i data-lucide="${catVal.icon}"></i>
+                <span>${catVal.label}</span>
+              </div>
+            </td>
+        `;
+
+        // Value columns
+        Object.values(techData).forEach(tech => {
+          const isHidden = !activeTechIds.includes(tech.id);
+          const cellValue = tech.specs[catKey];
+
+          // Apply search highlighting
+          let displayValue = cellValue;
+          let hasMatchClass = '';
+          if (searchQuery && cellValue.toLowerCase().includes(searchQuery.toLowerCase())) {
+            hasMatchClass = 'search-match-cell';
+            const regex = new RegExp(`(${searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+            displayValue = cellValue.replace(regex, '<span class="search-match-highlight">$1</span>');
+          }
+
+          html += `
+            <td class="content-cell ${isHidden ? 'col-hidden' : ''} ${hasMatchClass}" 
+                data-col-id="${tech.id}"
+                data-cat-label="${catVal.label}"
+                data-tech-name="${tech.name}"
+                data-tech-color="${tech.color}">
+              ${displayValue}
+            </td>
+          `;
+        });
+
+        html += `
+          </tr>
+        `;
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      displayFrame.innerHTML = html;
+      attachTableHoverEvents();
+      attachTableCellClickEvents();
+    }
+
+    // Interactive hover column highlighting
+    function attachTableHoverEvents() {
+      const cells = displayFrame.querySelectorAll('.matrix-table td, .matrix-table th');
+
+      cells.forEach(cell => {
+        cell.addEventListener('mouseover', () => {
+          const colId = cell.getAttribute('data-col-id');
+          if (!colId) return;
+
+          const colElements = displayFrame.querySelectorAll(`[data-col-id="${colId}"]`);
+          colElements.forEach(el => el.classList.add('highlighted-column'));
+        });
+
+        cell.addEventListener('mouseout', () => {
+          const colId = cell.getAttribute('data-col-id');
+          if (!colId) return;
+
+          const colElements = displayFrame.querySelectorAll(`[data-col-id="${colId}"]`);
+          colElements.forEach(el => el.classList.remove('highlighted-column'));
+        });
+      });
+    }
+
+    // Modal popup for easy reading on cell click
+    function attachTableCellClickEvents() {
+      const contentCells = displayFrame.querySelectorAll('.matrix-table td.content-cell');
+      contentCells.forEach(cell => {
+        cell.style.cursor = 'pointer';
+        cell.addEventListener('click', () => {
+          const techName = cell.getAttribute('data-tech-name');
+          const catLabel = cell.getAttribute('data-cat-label');
+          const techColor = cell.getAttribute('data-tech-color');
+          const cleanText = cell.innerText; // Get unhighlighted clean text
+
+          openModal(techName, catLabel, cleanText, techColor);
+        });
+      });
+    }
+
+    function openModal(techName, category, value, color) {
+      modalTitle.innerHTML = `<i data-lucide="info"></i> ${category}`;
+      modalBadge.innerText = techName;
+      modalBadge.style.backgroundColor = color + '1F';
+      modalBadge.style.color = color;
+      modalBadge.style.border = `1px solid ${color}4F`;
+      modalDesc.innerText = value;
+      detailModal.style.display = 'flex';
+      lucide.createIcons();
+    }
+
+    // --- CARD VIEW RENDERER ---
+    function renderCardView() {
+      let html = `<div class="cards-grid fade-in">`;
+
+      Object.values(techData).forEach(tech => {
+        const isHidden = !activeTechIds.includes(tech.id);
+        if (isHidden) return;
+
+        html += `
+          <div class="tech-card glass-card" style="--tech-accent-gradient: ${tech.gradient}; --tech-accent: ${tech.color}; --tech-glow: ${tech.glow}; --tech-bg: ${tech.bgColor}">
+            <div class="card-header-area">
+              <div class="card-title-wrap">
+                <h3><a href="${tech.url}" class="tech-link">${tech.name}</a></h3>
+                <span>${tech.specs.positioning}</span>
+              </div>
+              <div class="tech-logo-icon">
+                <i data-lucide="${tech.icon}"></i>
+              </div>
+            </div>
+
+            <div class="card-specs-list">
+        `;
+
+        // Print spec fields
+        Object.entries(categories).forEach(([catKey, catVal]) => {
+          const rawValue = tech.specs[catKey];
+          let displayValue = rawValue;
+
+          if (searchQuery && rawValue.toLowerCase().includes(searchQuery.toLowerCase())) {
+            const regex = new RegExp(`(${searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+            displayValue = rawValue.replace(regex, '<span class="search-match-highlight">$1</span>');
+          }
+
+          html += `
+            <div class="spec-item">
+              <div class="spec-item-title">
+                <i data-lucide="${catVal.icon}"></i>
+                <span>${catVal.label}</span>
+              </div>
+              <div class="spec-item-desc">${displayValue}</div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+
+            <!-- Visual Metric Bars -->
+            <div class="card-metrics-section">
+              <div class="metric-row">
+                <div class="metric-header">
+                  <span>Coverage / Range</span>
+                  <span>${tech.metrics.range}%</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" data-metric-value="${tech.metrics.range}"></div>
+                </div>
+              </div>
+              <div class="metric-row">
+                <div class="metric-header">
+                  <span>Data Speed / Throughput</span>
+                  <span>${tech.metrics.throughput}%</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" data-metric-value="${tech.metrics.throughput}"></div>
+                </div>
+              </div>
+              <div class="metric-row">
+                <div class="metric-header">
+                  <span>Power / Battery Efficiency</span>
+                  <span>${tech.metrics.battery}%</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" data-metric-value="${tech.metrics.battery}"></div>
+                </div>
+              </div>
+              <div class="metric-row">
+                <div class="metric-header">
+                  <span>Cost Efficiency</span>
+                  <span>${tech.metrics.cost}%</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" data-metric-value="${tech.metrics.cost}"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      displayFrame.innerHTML = html;
+
+      // Animate progress bars after inserting DOM
+      setTimeout(() => {
+        const progressFills = displayFrame.querySelectorAll('.metric-fill');
+        progressFills.forEach(fill => {
+          const val = fill.getAttribute('data-metric-value');
+          fill.style.width = `${val}%`;
+        });
+      }, 50);
+    }
+
+    // --- SETUP DUEL COMPARE WIDGET ---
+    function setupSelectors() {
+      // Clear options
+      duelSelectA.innerHTML = '';
+      duelSelectB.innerHTML = '';
+
+      Object.values(techData).forEach((tech, idx) => {
+        const optionA = document.createElement('option');
+        optionA.value = tech.id;
+        optionA.innerText = tech.name;
+        if (idx === 0) optionA.selected = true; // LoRa by default
+        duelSelectA.appendChild(optionA);
+
+        const optionB = document.createElement('option');
+        optionB.value = tech.id;
+        optionB.innerText = tech.name;
+        if (idx === 1) optionB.selected = true; // NB-IoT by default
+        duelSelectB.appendChild(optionB);
+      });
+
+      updateDuel();
+    }
+
+    function updateDuel() {
+      const techIdA = duelSelectA.value;
+      const techIdB = duelSelectB.value;
+
+      const techA = techData[techIdA];
+      const techB = techData[techIdB];
+
+      if (!techA || !techB) return;
+
+      let html = `
+        <!-- Left Tech Column -->
+        <div class="duel-column" style="--column-color: ${techA.color}; --tech-accent: ${techA.color}; --tech-glow: ${techA.glow}">
+          <div class="duel-tech-header">
+            <div class="tech-logo-icon" style="--tech-bg: ${techA.bgColor}; --tech-accent: ${techA.color}; --tech-glow: ${techA.glow}">
+              <i data-lucide="${techA.icon}"></i>
+            </div>
+            <h3><a href="${techA.url}" class="tech-link">${techA.name}</a></h3>
+          </div>
+      `;
+
+      // Add specs for A
+      Object.entries(categories).forEach(([catKey, catVal]) => {
+        html += `
+          <div class="duel-spec-group">
+            <div class="duel-spec-label">
+              <i data-lucide="${catVal.icon}"></i> ${catVal.label}
+            </div>
+            <div class="duel-spec-val">${techA.specs[catKey]}</div>
+          </div>
+        `;
+      });
+
+      html += `
+        </div>
+
+        <!-- Right Tech Column -->
+        <div class="duel-column" style="--column-color: ${techB.color}; --tech-accent: ${techB.color}; --tech-glow: ${techB.glow}">
+          <div class="duel-tech-header">
+            <div class="tech-logo-icon" style="--tech-bg: ${techB.bgColor}; --tech-accent: ${techB.color}; --tech-glow: ${techB.glow}">
+              <i data-lucide="${techB.icon}"></i>
+            </div>
+            <h3><a href="${techB.url}" class="tech-link">${techB.name}</a></h3>
+          </div>
+      `;
+
+      // Add specs for B
+      Object.entries(categories).forEach(([catKey, catVal]) => {
+        html += `
+          <div class="duel-spec-group">
+            <div class="duel-spec-label">
+              <i data-lucide="${catVal.icon}"></i> ${catVal.label}
+            </div>
+            <div class="duel-spec-val">${techB.specs[catKey]}</div>
+          </div>
+        `;
+      });
+
+      // Close column and add shared Metrics Comparison Panel at bottom of grid
+      html += `
+        </div>
+
+        <!-- Metrics Comparison Panel -->
+        <div class="duel-metrics-panel">
+          <div class="duel-metrics-title">Direct Metrics Duel</div>
+      `;
+
+      // Render compared metric rows
+      const compareMetricsList = [
+        { key: 'range', name: 'Range / Coverage' },
+        { key: 'throughput', name: 'Data Speed / Throughput' },
+        { key: 'battery', name: 'Power / Battery Efficiency' },
+        { key: 'cost', name: 'Deployment Cost Efficiency' }
+      ];
+
+      compareMetricsList.forEach(met => {
+        const valA = techA.metrics[met.key];
+        const valB = techB.metrics[met.key];
+
+        // Find which is winner (or draw)
+        const isWinnerA = valA > valB;
+        const isWinnerB = valB > valA;
+
+        html += `
+          <div class="compare-metric-row">
+            <div class="compare-metric-label">
+              <span style="text-align: left; color: ${isWinnerA ? techA.color : 'var(--text-secondary)'}; font-weight: ${isWinnerA ? '700' : '500'}">
+                ${valA}% ${isWinnerA ? '🏆' : ''}
+              </span>
+              <span class="metric-name">${met.name}</span>
+              <span style="text-align: right; color: ${isWinnerB ? techB.color : 'var(--text-secondary)'}; font-weight: ${isWinnerB ? '700' : '500'}">
+                ${isWinnerB ? '🏆' : ''} ${valB}%
+              </span>
+            </div>
+            <div class="dual-bars">
+              <!-- Left Bar (Tech A) -->
+              <div class="dual-bar-container dual-bar-left">
+                <div class="dual-bar-fill ${isWinnerA ? 'winner-glow' : ''}" 
+                     style="width: 0%; background: ${techA.color}; --winner-color: ${techA.glow};"
+                     data-duel-metric-val="${valA}"></div>
+              </div>
+              <!-- Right Bar (Tech B) -->
+              <div class="dual-bar-container">
+                <div class="dual-bar-fill ${isWinnerB ? 'winner-glow' : ''}" 
+                     style="width: 0%; background: ${techB.color}; --winner-color: ${techB.glow};"
+                     data-duel-metric-val="${valB}"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+
+      duelContent.innerHTML = html;
+      lucide.createIcons();
+
+      // Trigger metric bar animations
+      setTimeout(() => {
+        const dualBars = duelContent.querySelectorAll('.dual-bar-fill');
+        dualBars.forEach(bar => {
+          const val = bar.getAttribute('data-duel-metric-val');
+          bar.style.width = `${val}%`;
+        });
+      }, 50);
+    }
+
+    // --- EVENTS HANDLERS ---
+    function setupEventListeners() {
+      // Toggle view listeners
+      viewTableBtn.addEventListener('click', () => {
+        if (currentView === 'table') return;
+        currentView = 'table';
+        viewCardsBtn.classList.remove('active');
+        viewTableBtn.classList.add('active');
+        renderActiveView();
+      });
+
+      viewCardsBtn.addEventListener('click', () => {
+        if (currentView === 'cards') return;
+        currentView = 'cards';
+        viewTableBtn.classList.remove('active');
+        viewCardsBtn.classList.add('active');
+        renderActiveView();
+      });
+
+      // Search listeners
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        if (searchQuery.length > 0) {
+          clearSearchBtn.style.display = 'block';
+        } else {
+          clearSearchBtn.style.display = 'none';
+        }
+        renderActiveView();
+      });
+
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchBtn.style.display = 'none';
+        renderActiveView();
+      });
+
+      // Duel selector change listeners
+      duelSelectA.addEventListener('change', updateDuel);
+      duelSelectB.addEventListener('change', updateDuel);
+
+      // Close modal listeners
+      modalCloseBtn.addEventListener('click', () => {
+        detailModal.style.display = 'none';
+      });
+
+      window.addEventListener('click', (e) => {
+        if (e.target === detailModal) {
+          detailModal.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
